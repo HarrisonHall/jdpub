@@ -11,7 +11,6 @@ pub mod internal {
     pub use anyhow::{Result, anyhow, bail};
     pub use charabia::Tokenize;
 
-    pub use build_html::{self as html, Html};
     pub use clap::Parser;
     pub use rust_embed::RustEmbed;
     pub use serde::{Deserialize, Serialize, de::DeserializeOwned};

@@ -19,19 +19,21 @@ async fn main() -> Result<()> {
     crate::logging::init(&cli)?;
 
     // Parse configuration.
-    let config = cli.config()?;
+    let mut config = cli.config()?;
 
     // Build the database.
     let db = DictDb::new()?;
 
     // Parse input.
-    let mut ast = parsing::parse(&config).await?;
+    let mut chapters = parsing::parse(&mut config).await?;
 
     // Add annotations.
-    db.transform(&mut ast.root, &config)?;
+    for chapter in chapters.iter_mut() {
+        db.transform(&mut chapter.root, &config)?;
+    }
 
     // Export accordingly.
-    export::export(ast, &config)?;
+    export::export(&mut chapters, &config)?;
 
     Ok(())
 }

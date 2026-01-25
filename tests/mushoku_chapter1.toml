@@ -1,0 +1,17 @@
+title = "Mushoku Chapter 1"
+cover = "tests/mushoku.png"
+
+chapters = [
+  "mushoku_prologue.html",
+  "mushoku_episode1.html",
+  "mushoku_episode2.html",
+  "mushoku_episode3.html",
+  "mushoku_episode4.html",
+  "mushoku_episode5.html",
+  "mushoku_episode6.html",
+  "mushoku_episode7.html",
+  "mushoku_episode8.html",
+  "mushoku_episode9.html",
+  "mushoku_episode10.html",
+  "mushoku_episode11.html",
+]
