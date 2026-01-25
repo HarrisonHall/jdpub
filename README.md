@@ -1,0 +1,92 @@
+# jdpub
+
+jdpub annotates a source document with definitions for difficult vocabulary
+words to make reading easier.
+
+jdpub currently only supports annotating documents for the Japanese language.
+
+This software is version `0.0.1`, expect configuration and usage to change. The
+alpha release exists to provide the tool as early as possible.
+
+## Usage
+
+A web view for jdpub is currently in development. Until then, refer to the CLI.
+
+```
+> jdpub --help
+...
+```
+
+Example usage:
+
+- Parsing a website: `jdpub https://hachha.dev/blog/jdpub -o jdpub.epub`
+- Parsing a file:
+  `curl https://hachha.dev/blog/jdpub -o jdpub.html && jdpub jdpub.html -o jdpub.epub`
+
+e.g.,
+
+```bash
+jdpub
+```
+
+## Motivation
+
+This software was created to support reading more advanced material on an
+e-reader as opposed to relying on other existing tools or services like
+[yomitan](https://yomitan.wiki/) or [LingQ](https://www.lingq.com/) that require
+a phone or pc. Additional motivation for the initial release can be read
+[here](https://hachha.dev/blog/jdpub).
+
+jdpub has the following goals:
+
+- [x] Annotate the Japanese language
+- [x] Support custom parsing rules from the source document
+- [x] Import from HTML
+- [ ] Import from EPUB
+- [ ] Import from plaintext
+- [x] Export to HTML
+- [x] Export to EPUB
+- [ ] Export to plaintext
+- [ ] Provide a web-interface for client-side conversion (WASM)
+- [ ] Provide more options for adding additional metadata to exported EPUBs
+- [ ] Provide a sane default `styles.css`
+- [ ] Image support
+- [ ] Additional dictionary support
+
+jdpub explicitly has the following non-goals:
+
+- jdpub is not a reader.
+- jdpub is not designed for document conversion, use
+  [calibre](https://github.com/kovidgoyal/calibre) or other software.
+
+While jdpub is currently only designed to support Japanese, it could be easily
+extended to support additional languages. The Japanese writing system is
+typically more complex than western writing, so techniques to tokenize the words
+and lookup definitions with respect to conjugations is itself more complex. For
+languages like English that can be tokenized solely by whitespace, the results
+should be better.
+
+## Software Support
+
+jdpub adds
+[popup tooltips](https://help.apple.com/itc/booksassetguide/en.lproj/itccf8ecf5c8.html)
+to text that are supported by various e-readers. Popup tooltips work by adding
+the `epub:type="noteref"` and `epub:type="footnote"` attributes to XHTML anchors
+and asides, respectfully. Compatibility has been tested on the following
+readers:
+
+- Koreader (enable `Show footnotes in popup`)
+- Neoreader
+
+## References
+
+- [Apple popup tooltips](https://help.apple.com/itc/booksassetguide/en.lproj/itccf8ecf5c8.html)
+- [HTML vs XHTML](https://software.grok.lsu.edu/Article.aspx?articleid=6900)
+
+## Building
+
+jdpub relies on 2 crates that currently make it impossible to build.
+`durf_parser` is an HTML parsing & minimizing crate that I have not yet
+released. `jmdict-fast` is an excellent crate for Japanese word lookup, but
+building on my own pc requires modifications to the source that I have note yet
+upstreamed anywhere.
