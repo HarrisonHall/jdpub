@@ -5,16 +5,30 @@ words to make reading easier.
 
 jdpub currently only supports annotating documents for the Japanese language.
 
-This software is version `0.0.1`, expect configuration and usage to change. The
-alpha release exists to provide the tool as early as possible.
+> [!WARNING]  
+> This software is version `0.2.0`, expect configuration and usage to change.
+> The alpha release exists to provide the tool as early as possible.
 
 ## Usage
 
 A web view for jdpub is currently in development. Until then, refer to the CLI.
 
 ```
-> jdpub --help
-...
+Usage: jdpub [OPTIONS] --output <OUTPUT> <INPUT>
+
+Arguments:
+  <INPUT>  Input uri/file
+
+Options:
+  -o, --output <OUTPUT>  Output file
+  -c, --config <CONFIG>  Configuration file
+  -d, --debug            debug flag
+  -v, --verbose          Verbose flag
+      --cover <COVER>    Cover image uri/file
+      --title <TITLE>    Title of export
+      --author <AUTHOR>  Author of export
+  -h, --help             Print help
+  -V, --version          Print version
 ```
 
 Example usage:
@@ -22,12 +36,6 @@ Example usage:
 - Parsing a website: `jdpub https://hachha.dev/blog/jdpub -o jdpub.epub`
 - Parsing a file:
   `curl https://hachha.dev/blog/jdpub -o jdpub.html && jdpub jdpub.html -o jdpub.epub`
-
-e.g.,
-
-```bash
-jdpub
-```
 
 ## Motivation
 
@@ -78,10 +86,13 @@ readers:
 - Koreader (enable `Show footnotes in popup`)
 - Neoreader
 
+![tensura koreader example](media/example.png)
+
 ## References
 
 - [Apple popup tooltips](https://help.apple.com/itc/booksassetguide/en.lproj/itccf8ecf5c8.html)
 - [HTML vs XHTML](https://software.grok.lsu.edu/Article.aspx?articleid=6900)
+- [Usability of footnotes](https://shkspr.mobi/blog/2020/07/usability-of-footnotes/)
 
 ## Building
 

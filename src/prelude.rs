@@ -6,6 +6,7 @@ pub mod internal {
     pub use std::borrow::Cow;
     pub use std::collections::HashMap;
     pub use std::path::{Path, PathBuf};
+    use std::str::FromStr;
 
     pub use anyhow::{Result, anyhow, bail};
     pub use charabia::Tokenize;

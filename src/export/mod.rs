@@ -1,4 +1,4 @@
-use std::str::FromStr;
+use build_html::HtmlContainer;
 
 use super::*;
 
@@ -6,11 +6,13 @@ const JPDB_FILE_TEMPLATE: &'static str = "{{JPDB_FILE_TEMPLATE}}";
 
 pub fn export(ast: durf::Ast, config: &Config) -> Result<()> {
     // Create an html document.
-    let doc = HtmlDoc::new(ast);
+    let mut doc = HtmlDoc::new(ast);
     let as_html = doc
-        .to_html()
+        .build()?
         .to_html_string()
+        // TODO: This can be removed.
         .replace(JPDB_FILE_TEMPLATE, "test.xhtml")
+        // We need to add the epub namespace to use epub attributes.
         .replace(
             "xml:lang=\"en\"",
             "xml:lang=\"en\" xmlns:epub=\"http://www.idpf.org/2007/ops\"",
@@ -18,7 +20,7 @@ pub fn export(ast: durf::Ast, config: &Config) -> Result<()> {
 
     tracing::trace!("Generated HTML:\n{}\n", as_html);
 
-    std::fs::write("test.xhtml", &as_html)?;
+    // std::fs::write("test.xhtml", &as_html)?;
 
     use epub_builder::EpubBuilder;
     use epub_builder::EpubContent;
@@ -66,6 +68,7 @@ pub fn export(ast: durf::Ast, config: &Config) -> Result<()> {
         },
     )?;
 
+    builder.stylesheet(".footnotes { display: hidden; }".as_bytes())?;
     // .stylesheet(css_file.as_bytes())?
     // .add_content(
     //     EpubContent::new("cover.xhtml", dummy_content.as_bytes())
@@ -110,58 +113,44 @@ pub fn export(ast: durf::Ast, config: &Config) -> Result<()> {
 
 struct HtmlDoc {
     ast: durf_parser::Ast,
-    page: html::HtmlPage,
-    num_footnotes: u32,
-    // footnotes: Vec<FootNote>,
+    footnotes: Vec<html::HtmlElement>,
 }
 
 impl HtmlDoc {
     fn new(ast: durf_parser::Ast) -> Self {
         Self {
             ast,
-            page: html::HtmlPage::new().with_title("JPDB"),
-            num_footnotes: 0,
+            footnotes: Vec::new(),
+            // page: html::HtmlPage::new().with_title("JPDB"),
+            // num_footnotes: 0,
         }
     }
-}
 
-trait ToHtml {
-    fn to_html(&self) -> html::HtmlPage {
-        use html::HtmlContainer;
+    fn build(&mut self) -> Result<html::HtmlPage> {
+        // Create new page.
+        let mut page = html::HtmlPage::new().with_title("JPDB");
 
-        let page =
-            html::HtmlPage::new()
-                .with_title("JPDB")
-                .with_raw(match self.to_html_element() {
-                    Some(e) => e.to_string(),
-                    None => String::new(),
-                });
-        page
+        // Add ast as element.
+        let root = self.ast.root.clone();
+        page.add_raw(match self.to_html_element(&root) {
+            Some(e) => e.to_string(),
+            None => String::new(),
+        });
+
+        // Add footnotes.
+        let mut footnotes_elem = html::HtmlElement::new(html::HtmlTag::ParagraphText)
+            .with_attribute("class", "footnotes NoShow");
+        let footnotes: Vec<html::HtmlElement> = self.footnotes.drain(..).collect();
+        for footnote in footnotes {
+            footnotes_elem = footnotes_elem.with_child(footnote.into());
+        }
+        page.add_raw(footnotes_elem.to_string());
+
+        Ok(page)
     }
 
-    fn to_html_element(&self) -> Option<html::HtmlElement>;
-}
-
-impl ToHtml for HtmlDoc {
-    fn to_html(&self) -> build_html::HtmlPage {
-        use html::HtmlContainer;
-        let page = html::HtmlPage::with_version(html::HtmlVersion::XHTML1_1)
-            .with_title("JPDB")
-            .with_raw(match self.to_html_element() {
-                Some(e) => e.to_string(),
-                None => String::new(),
-            });
-        page
-    }
-
-    fn to_html_element(&self) -> Option<build_html::HtmlElement> {
-        self.ast.root.to_html_element()
-    }
-}
-
-impl ToHtml for durf_parser::Node {
-    fn to_html_element(&self) -> Option<build_html::HtmlElement> {
-        match &**self {
+    fn to_html_element(&mut self, node: &durf::Node) -> Option<html::HtmlElement> {
+        match &**node {
             durf_parser::RawNode::Empty => None,
             durf_parser::RawNode::Section(section) => {
                 let mut elem = html::HtmlElement::new(match section.ordering() {
@@ -169,7 +158,7 @@ impl ToHtml for durf_parser::Node {
                     _ => html::HtmlTag::Div,
                 });
                 for node in section.nodes.iter() {
-                    match node.to_html_element() {
+                    match self.to_html_element(node) {
                         Some(n) => {
                             elem = elem.with_child(n.into());
                         }
@@ -207,30 +196,31 @@ impl ToHtml for durf_parser::Node {
                     let mut text_elem = html::HtmlElement::new(html::HtmlTag::Span);
                     if let Some(tooltip) = &fragment.attributes.tooltip {
                         let id = uuid::Uuid::new_v4();
-                        text_elem = text_elem
-                            .with_child(
-                                html::HtmlElement::new(html::HtmlTag::Link)
-                                    .with_child(fragment.text.as_str().into())
-                                    .with_attribute("class", "noteref")
-                                    .with_attribute(
-                                        "href",
-                                        // format!("{JPDB_FILE_TEMPLATE}#tooltip-{id}"),
-                                        format!("#tooltip-{id}"),
-                                    )
-                                    .with_attribute("epub:type", "noteref")
-                                    .into(),
-                            )
-                            // .with_child(html::HtmlChild::new(html::HtmlTag::))
-                            .with_child(
-                                html::HtmlElement::new(html::HtmlTag::Aside)
-                                    .with_child(tooltip.as_str().into())
-                                    .with_attribute("class", "footnote")
-                                    .with_attribute("id", format!("tooltip-{id}"))
-                                    .with_attribute("epub:type", "footnote")
-                                    // .with_attribute("epub:-cr-hint", "non-linear")
-                                    .with_attribute("epub:linear", "no")
-                                    .into(),
-                            );
+                        text_elem = text_elem.with_child(
+                            html::HtmlElement::new(html::HtmlTag::Link)
+                                .with_child(fragment.text.as_str().into())
+                                .with_attribute("class", "noteref")
+                                .with_attribute(
+                                    "href",
+                                    // format!("{JPDB_FILE_TEMPLATE}#tooltip-{id}"),
+                                    format!("#tooltip-{id}"),
+                                )
+                                .with_attribute("epub:type", "noteref")
+                                .with_attribute("role", "doc-noteref")
+                                .into(),
+                        );
+                        // .with_child(html::HtmlChild::new(html::HtmlTag::))
+                        self.footnotes.push(
+                            html::HtmlElement::new(html::HtmlTag::Aside)
+                                .with_child(tooltip.as_str().into())
+                                .with_attribute("class", "footnote")
+                                .with_attribute("id", format!("tooltip-{id}"))
+                                .with_attribute("epub:type", "footnote")
+                                // .with_attribute("epub:-cr-hint", "non-linear")
+                                .with_attribute("epub:linear", "no")
+                                .with_attribute("role", "doc-footnote")
+                                .into(),
+                        );
                         elem = elem.with_child(text_elem.into());
                         continue;
                     }
