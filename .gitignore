@@ -1,0 +1,10 @@
+# Rust files:
+/target
+
+# Book files:
+*.epub
+*.bak
+*.mobi
+*.sdr
+*.html
+*.xhtml
