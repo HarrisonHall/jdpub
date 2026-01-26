@@ -43,7 +43,8 @@ This software was created to support reading more advanced material on an
 e-reader as opposed to relying on other existing tools or services like
 [yomitan](https://yomitan.wiki/) or [LingQ](https://www.lingq.com/) that require
 a phone or pc. Additional motivation for the initial release can be read
-[here](https://hachha.dev/blog/jdpub).
+[here](https://hachha.dev/blog/jdpub). jdpub supports fetching and parsing
+webpages with various parse rules for navigating elements.
 
 jdpub has the following goals:
 
@@ -96,10 +97,14 @@ readers:
 - [HTML vs XHTML](https://software.grok.lsu.edu/Article.aspx?articleid=6900)
 - [Usability of footnotes](https://shkspr.mobi/blog/2020/07/usability-of-footnotes/)
 
-## Building
+## Installation
 
-jdpub relies on 2 crates that currently make it impossible to build.
+jdpub relies on 2 crates that currently make it impossible to build manually.
 `durf_parser` is an HTML parsing & minimizing crate that I have not yet
 released. `jmdict-fast` is an excellent crate for Japanese word lookup, but
 building on my own pc requires modifications to the source that I have note yet
 upstreamed anywhere.
+
+Releases will be periodically provided for x64 Linux until this is resolved. I
+have no plans to test a Windows build at this point, but I can produce one if
+requested. Otherwise, I suggest waiting until the web view is available.

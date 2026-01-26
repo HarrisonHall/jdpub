@@ -136,11 +136,22 @@ impl Default for HtmlParseConfig {
 }
 
 /// Language configuration.
-#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct LanguageConfig {
+    /// Use approximate lookups and definitions.
+    pub approximate: bool,
     /// Japanese language configuration.
     #[serde(default)]
     pub japanese: JapaneseLanguageConfig,
+}
+
+impl Default for LanguageConfig {
+    fn default() -> Self {
+        Self {
+            approximate: true,
+            japanese: JapaneseLanguageConfig::default(),
+        }
+    }
 }
 
 /// Japanese language configuration.
@@ -149,17 +160,11 @@ pub struct JapaneseLanguageConfig {
     /// JLPT level.
     #[serde(default, alias = "jlpt-level")]
     pub jlpt_level: u32,
-    /// Use approximate definitions.
-    #[serde(default)]
-    pub approximate: bool,
 }
 
 impl Default for JapaneseLanguageConfig {
     fn default() -> Self {
-        Self {
-            jlpt_level: 3,
-            approximate: true,
-        }
+        Self { jlpt_level: 3 }
     }
 }
 

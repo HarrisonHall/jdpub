@@ -23,7 +23,7 @@ async fn main() -> Result<()> {
     let mut config = cli.config()?;
 
     // Build the database.
-    let db = DictDb::new()?;
+    let db = DictDb::new(&config)?;
 
     // Parse input.
     let mut book = import::import(&mut config).await?;

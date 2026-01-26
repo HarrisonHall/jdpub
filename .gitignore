@@ -8,3 +8,6 @@
 *.sdr
 *.html
 *.xhtml
+
+# Temporarily, tests:
+/tests
