@@ -1,17 +1,43 @@
+[export]
 title = "Mushoku Chapter 1"
+author = "理不尽な孫の手"
 cover = "tests/mushoku.png"
+path = "tests/mushoku_chapter1.epub"
 
-chapters = [
-  "mushoku_prologue.html",
-  "mushoku_episode1.html",
-  "mushoku_episode2.html",
-  "mushoku_episode3.html",
-  "mushoku_episode4.html",
-  "mushoku_episode5.html",
-  "mushoku_episode6.html",
-  "mushoku_episode7.html",
-  "mushoku_episode8.html",
-  "mushoku_episode9.html",
-  "mushoku_episode10.html",
-  "mushoku_episode11.html",
-]
+[import]
+[[import.chapter]]
+title = "Prologue"
+path = "tests/mushoku_prologue.html"
+[[import.chapter]]
+title = "Chapter 1"
+path = "tests/mushoku_episode1.html"
+[[import.chapter]]
+title = "Chapter 2"
+path = "tests/mushoku_episode2.html"
+[[import.chapter]]
+title = "Chapter 3"
+path = "tests/mushoku_episode3.html"
+[[import.chapter]]
+title = "Chapter 4"
+path = "tests/mushoku_episode4.html"
+[[import.chapter]]
+title = "Chapter 5"
+path = "tests/mushoku_episode5.html"
+[[import.chapter]]
+title = "Chapter 6"
+path = "tests/mushoku_episode6.html"
+[[import.chapter]]
+title = "Chapter 7"
+path = "tests/mushoku_episode7.html"
+[[import.chapter]]
+title = "Chapter 8"
+path = "tests/mushoku_episode8.html"
+[[import.chapter]]
+title = "Chapter 9"
+path = "tests/mushoku_episode9.html"
+[[import.chapter]]
+title = "Chapter 10"
+path = "tests/mushoku_episode10.html"
+[[import.chapter]]
+title = "Chapter 11"
+path = "tests/mushoku_episode11.html"

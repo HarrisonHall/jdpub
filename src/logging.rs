@@ -5,7 +5,6 @@ use super::*;
 use std::collections::VecDeque;
 use std::fmt;
 use std::io::Write;
-use std::str::FromStr;
 use std::sync::Arc;
 use std::sync::LazyLock;
 use std::sync::RwLock;
@@ -74,6 +73,7 @@ impl Logger {
     }
 
     /// Toggle whether or not the writer is outputing to the terminal.
+    #[allow(unused)]
     pub fn set_writing(&mut self, writing: bool) -> Result<()> {
         self.writing.store(writing, Ordering::Release);
         if writing {
@@ -83,6 +83,7 @@ impl Logger {
     }
 
     /// Peek the back of the flush buffer.
+    #[allow(unused)]
     pub fn peek(&self, len: usize) -> Vec<String> {
         let mut logs = Vec::with_capacity(len);
         if let Ok(buffer) = self.buffer.read() {
@@ -188,6 +189,7 @@ where
 }
 
 /// Formatter for the log file.
+#[allow(unused)]
 struct FileFormatter;
 
 impl<S, N> FormatEvent<S, N> for FileFormatter

@@ -1,27 +1,29 @@
+[parse]
+[parse.html]
 user-agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36"
 
-[[allow]]
+[[parse.html.allow]]
 element = "article"
-[[allow]]
+[[parse.html.allow]]
 element = "main"
 
-[[skip]]
+[[parse.html.skip]]
 class = "c-pager"
-[[skip]]
+[[parse.html.skip]]
 class = "c-modal"
-[[skip]]
+[[parse.html.skip]]
 class = "c-announce-box"
-[[skip]]
+[[parse.html.skip]]
 class = "c-toast"
-[[skip]]
+[[parse.html.skip]]
 class = "c-ad"
-[[skip]]
+[[parse.html.skip]]
 class = "js-siori"
-[[skip]]
+[[parse.html.skip]]
 class = "p-reaction"
-[[skip]]
+[[parse.html.skip]]
 class = "p-novelpoint-form__body"
-[[skip]]
+[[parse.html.skip]]
 class = "l-foot-contents"
-[[skip]]
+[[parse.html.skip]]
 class = "remodal-wrapper"

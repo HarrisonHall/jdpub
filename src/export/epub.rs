@@ -7,7 +7,7 @@ use epub_builder::ReferenceType;
 // use epub_builder::TocElement;
 use epub_builder::ZipLibrary;
 
-pub fn export(chapters: &mut Vec<durf::Ast>, config: &Config) -> Result<()> {
+pub fn export(book: &mut Book, config: &Config) -> Result<()> {
     // Create the builder.
     let mut builder = match EpubBuilder::new(match ZipLibrary::new() {
         Ok(z) => z,
@@ -18,7 +18,7 @@ pub fn export(chapters: &mut Vec<durf::Ast>, config: &Config) -> Result<()> {
     };
     builder.epub_version(epub_builder::EpubVersion::V30);
 
-    if let Some(cover) = &config.cover_file {
+    if let Some(cover) = &config.export.cover {
         let cover_image = match std::fs::read(cover) {
             Ok(d) => d,
             Err(e) => bail!("Unable to read cover image: {e}"),
@@ -31,16 +31,16 @@ pub fn export(chapters: &mut Vec<durf::Ast>, config: &Config) -> Result<()> {
     }
     builder.metadata(
         "author",
-        match config.author.as_str() {
+        match book.author.as_str() {
             "" => "jdpub",
-            _ => &config.author,
+            _ => &book.author,
         },
     )?;
     builder.metadata(
         "title",
-        match config.title.as_str() {
+        match book.title.as_str() {
             "" => format!("jdpub-{}", uuid::Uuid::new_v4()),
-            _ => config.title.clone(),
+            _ => book.title.clone(),
         },
     )?;
 
@@ -59,13 +59,14 @@ pub fn export(chapters: &mut Vec<durf::Ast>, config: &Config) -> Result<()> {
     // )?
 
     // Add cover.
+    tracing::info!("Cover using title: {}.", book.title);
     builder.add_content(
         EpubContent::new(
             "cover.xhtml",
             html::html::HtmlPage::new()
                 .with_raw(
                     html::html::HtmlElement::new(html::html::HtmlTag::Heading1)
-                        .with_child(config.title.clone().into()),
+                        .with_child(book.title.clone().into()),
                 )
                 .to_html_string()
                 .as_bytes(),
@@ -78,10 +79,13 @@ pub fn export(chapters: &mut Vec<durf::Ast>, config: &Config) -> Result<()> {
     builder.inline_toc();
 
     // Add the xhtml, mark it as beginning of the "real content"
-    for (i, chapter) in chapters.iter_mut().enumerate() {
+    for (i, chapter) in book.chapters.iter_mut().enumerate() {
         // Convert chapter to html.
-        let chapter_name = format!("Chapter {}", i + 1);
-        let mut doc = html::HtmlDoc::new(chapter.clone());
+        let chapter_name = match &chapter.title {
+            Some(title) => title.clone(),
+            None => format!("Chapter {}", i + 1),
+        };
+        let mut doc = html::HtmlDoc::new(chapter.ast.clone());
 
         // Build to html string.
         let as_html = doc
@@ -106,18 +110,18 @@ pub fn export(chapters: &mut Vec<durf::Ast>, config: &Config) -> Result<()> {
         )?;
     }
 
-    let mut out = std::fs::File::create(config.output())?;
+    let mut out = std::fs::File::create(&config.export.output_file)?;
     match builder.generate(&mut out) {
         Ok(()) => {
             tracing::info!(
                 "Successfully generated {}.",
-                config.output().to_string_lossy()
+                config.export.output_file.to_string_lossy()
             );
         }
         Err(e) => {
             bail!(
                 "Failed to write {}: {}",
-                config.output().to_string_lossy(),
+                config.export.output_file.to_string_lossy(),
                 e
             );
         }

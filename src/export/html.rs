@@ -5,19 +5,19 @@ use super::*;
 pub use build_html::HtmlContainer;
 pub use build_html::{self as html, Html};
 
-pub fn export(chapters: &mut Vec<durf::Ast>, config: &Config) -> Result<()> {
+pub fn export(book: &mut Book, config: &Config) -> Result<()> {
     // Create new HTML page.
-    let mut page = html::HtmlPage::new().with_title(match config.title.as_str() {
+    let mut page = html::HtmlPage::new().with_title(match book.title.as_str() {
         "" => "JDPUB",
-        _ => &config.title,
+        _ => &book.title,
     });
 
     // Add the html for each chapter.
     let mut docs = Vec::new();
-    for (i, chapter) in chapters.iter_mut().enumerate() {
+    for (_i, chapter) in book.chapters.iter_mut().enumerate() {
         // Convert chapter to html.
         // let chapter_name = format!("Chapter {}", i + 1);
-        let mut doc = HtmlDoc::new(chapter.clone());
+        let mut doc = HtmlDoc::new(chapter.ast.clone());
         doc.export_as = ExportOption::Html;
 
         // Add ast as element.
@@ -33,7 +33,7 @@ pub fn export(chapters: &mut Vec<durf::Ast>, config: &Config) -> Result<()> {
     // Add the tooltips (footnotes) for each chapter.
     let mut footnotes_elem = html::HtmlElement::new(html::HtmlTag::ParagraphText)
         .with_attribute("class", "footnotes NoShow");
-    for (i, doc) in docs.iter_mut().enumerate() {
+    for (_i, doc) in docs.iter_mut().enumerate() {
         for footnote in doc.footnotes.iter() {
             let footnote = footnote.clone();
             footnotes_elem.add_child(footnote.into());
@@ -79,18 +79,18 @@ pub fn export(chapters: &mut Vec<durf::Ast>, config: &Config) -> Result<()> {
             "xml:lang=\"en\" xmlns:epub=\"http://www.idpf.org/2007/ops\"",
         );
 
-    let mut out = std::fs::File::create(config.output())?;
+    let mut out = std::fs::File::create(&config.export.output_file)?;
     match out.write_all(as_html.as_bytes()) {
         Ok(()) => {
             tracing::info!(
                 "Successfully generated {}.",
-                config.output().to_string_lossy()
+                config.export.output_file.to_string_lossy()
             );
         }
         Err(e) => {
             bail!(
                 "Failed to write {}: {}",
-                config.output().to_string_lossy(),
+                config.export.output_file.to_string_lossy(),
                 e
             );
         }

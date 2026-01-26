@@ -1,11 +1,12 @@
 //! jdpub
 
+mod book;
 mod cli;
 mod config;
 mod export;
+mod import;
 mod language;
 mod logging;
-mod parsing;
 mod prelude;
 mod util;
 
@@ -25,15 +26,15 @@ async fn main() -> Result<()> {
     let db = DictDb::new()?;
 
     // Parse input.
-    let mut chapters = parsing::parse(&mut config).await?;
+    let mut book = import::import(&mut config).await?;
 
     // Add annotations.
-    for chapter in chapters.iter_mut() {
-        db.transform(&mut chapter.root, &config)?;
+    for chapter in book.chapters.iter_mut() {
+        db.transform(&mut chapter.ast.root, &config)?;
     }
 
     // Export accordingly.
-    export::export(&mut chapters, &config)?;
+    export::export(&mut book, &config)?;
 
     Ok(())
 }

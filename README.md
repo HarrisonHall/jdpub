@@ -60,6 +60,8 @@ jdpub has the following goals:
 - [ ] Provide a sane default `styles.css`
 - [ ] Image support
 - [ ] Additional dictionary support
+- [x] Support multiple configuration files
+- [ ] Improve configuration merging support
 
 jdpub explicitly has the following non-goals:
 

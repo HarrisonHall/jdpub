@@ -14,11 +14,11 @@ impl DictDb {
             dict,
         };
 
-        db.read_jlpt_csv("jp/jlpt/n1.csv", 1)?;
-        db.read_jlpt_csv("jp/jlpt/n2.csv", 2)?;
-        db.read_jlpt_csv("jp/jlpt/n3.csv", 3)?;
-        db.read_jlpt_csv("jp/jlpt/n4.csv", 4)?;
-        db.read_jlpt_csv("jp/jlpt/n5.csv", 5)?;
+        db.read_jlpt_csv("jlpt/n1.csv", 1)?;
+        db.read_jlpt_csv("jlpt/n2.csv", 2)?;
+        db.read_jlpt_csv("jlpt/n3.csv", 3)?;
+        db.read_jlpt_csv("jlpt/n4.csv", 4)?;
+        db.read_jlpt_csv("jlpt/n5.csv", 5)?;
 
         tracing::debug!("Parsed {} JLPT entries.", db.jlpt_entries.len());
 
@@ -26,7 +26,7 @@ impl DictDb {
     }
 
     fn read_jlpt_csv(&mut self, file: &str, level: u8) -> Result<()> {
-        let content = read_embedded_text::<Metadata>(file)?;
+        let content = read_embedded_text::<JapaneseMetadata>(file)?;
         // let file = std::fs::File::open(file)?;
         // let mut reader = csv::ReaderBuilder::new().from_reader(std::io::BufReader::new(file));
         let mut reader =
@@ -116,7 +116,8 @@ impl DictDb {
 
                             // If the jlpt level of this word is higher than our
                             // jlpt level, skip.
-                            if lookup.jlpt.unwrap_or(0) as u32 > config.jlpt_level {
+                            if lookup.jlpt.unwrap_or(0) as u32 > config.language.japanese.jlpt_level
+                            {
                                 new_text
                                     .fragments
                                     .push(durf_parser::TextFragment::new(token.lemma(), None));
@@ -157,8 +158,8 @@ impl DictDb {
 }
 
 #[derive(RustEmbed)]
-#[folder = "metadata/"]
-struct Metadata;
+#[folder = "metadata/language/jp"]
+struct JapaneseMetadata;
 
 /// Serde derive class for the CSV format of JLPT vocabulary.
 #[derive(Debug, serde::Deserialize)]
