@@ -2,6 +2,8 @@ use std::str::FromStr;
 
 use super::*;
 
+mod epub;
+
 /// Parse the input to durf asts.
 pub async fn import(config: &mut Config) -> Result<Book> {
     let mut book = config.export.book()?;
@@ -46,6 +48,17 @@ pub async fn import(config: &mut Config) -> Result<Book> {
                 Ok(fname) => fname,
                 Err(e) => bail!("Unable to parse filename: {e}"),
             };
+
+            if normalized_path.to_string_lossy().ends_with(".epub") {
+                match epub::import(normalized_path.as_path(), config, &mut book, chapter) {
+                    Ok(()) => {}
+                    Err(e) => tracing::error!(
+                        "Failed to parse epub '{}': {e}",
+                        normalized_path.to_string_lossy()
+                    ),
+                }
+                continue;
+            }
 
             // // If file doesn't exist, try to get it relative to the config file.
             // if !normalized_path.exists()

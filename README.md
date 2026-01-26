@@ -48,10 +48,11 @@ webpages with various parse rules for navigating elements.
 
 jdpub has the following goals:
 
-- [x] Annotate the Japanese language
+- [x] Add dictionary tooltips for the Japanese language
+- [x] Add furigana annotations for the Japanese language
 - [x] Support custom parsing rules from the source document
 - [x] Import from HTML
-- [ ] Import from EPUB
+- [x] Import from EPUB
 - [ ] Import from plaintext
 - [x] Export to HTML
 - [x] Export to EPUB
@@ -63,6 +64,7 @@ jdpub has the following goals:
 - [ ] Additional dictionary support
 - [x] Support multiple configuration files
 - [ ] Improve configuration merging support
+- [ ] Support caching fetched HTML files
 
 jdpub explicitly has the following non-goals:
 
@@ -89,13 +91,14 @@ readers:
 - Koreader (enable `Show footnotes in popup`)
 - Neoreader
 
-![tensura koreader example](media/example.png)
+![tensura koreader example](metadata/media/example.png)
 
 ## References
 
 - [Apple popup tooltips](https://help.apple.com/itc/booksassetguide/en.lproj/itccf8ecf5c8.html)
 - [HTML vs XHTML](https://software.grok.lsu.edu/Article.aspx?articleid=6900)
 - [Usability of footnotes](https://shkspr.mobi/blog/2020/07/usability-of-footnotes/)
+- [iBook support](https://gist.github.com/NickBarreto/9811005)
 
 ## Installation
 

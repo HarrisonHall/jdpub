@@ -1,6 +1,6 @@
 [package]
 name = "jdpub"
-version = "0.4.0"
+version = "0.5.0"
 edition = "2024"
 
 [dependencies]
@@ -40,6 +40,7 @@ uuid = { version = "1.19.0", features = ["v4"] }
 
 # EPUB
 epub-builder = "0.8.2"
+epub-parser = "0.2.1"
 
 # File
 rust-embed = { version = "8.11.0", features = ["include-exclude", "compression"] }

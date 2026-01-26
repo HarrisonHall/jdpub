@@ -193,7 +193,13 @@ impl HtmlDoc {
                         let id = uuid::Uuid::new_v4();
                         text_elem = text_elem.with_child(
                             html::HtmlElement::new(html::HtmlTag::Link)
-                                .with_child(fragment.text.as_str().into())
+                                .with_child(match &fragment.attributes.annotation {
+                                    Some(annotation) => html::HtmlChild::Raw(format!(
+                                        "<ruby>{}<rp>(</rp><rt>{}</rt><rp>)</rp></ruby>",
+                                        fragment.text, annotation
+                                    )),
+                                    None => fragment.text.as_str().into(),
+                                })
                                 .with_attribute("class", "noteref")
                                 .with_attribute(
                                     "href",

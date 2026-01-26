@@ -95,6 +95,11 @@ impl DictDb {
     pub fn lookup(&self, word: &str) -> Option<DictLookup> {
         let word = word.trim();
 
+        // Skip english words, numerals, etc.
+        if word.is_english() {
+            return None;
+        }
+
         // If a common word, just use that.
         if let Some(common) = self.common.get(word) {
             return Some(common.into());
@@ -142,7 +147,7 @@ impl DictDb {
             is_kana: word.trim().is_kana(),
             kana: results[0].kana[0].text.clone(),
             meaning: results[0].sense[0].gloss[0].text.clone(),
-            jlpt: None,
+            jlpt: JlptLevel::None,
         })
     }
 
@@ -173,6 +178,8 @@ impl DictDb {
                         let word = token.lemma();
                         if let Some(lookup) = self.lookup(word) {
                             // TODO: Support keeping the previous text attributes.
+                            // If an existing annotation exists, prefer that (e.g.,
+                            // name readings).
 
                             // If this is a single character kana, skip.
                             // TODO: This should be smarter. We should check for
@@ -189,8 +196,7 @@ impl DictDb {
 
                             // If the jlpt level of this word is higher than our
                             // jlpt level, skip.
-                            if lookup.jlpt.unwrap_or(0) as u32 > config.language.japanese.jlpt_level
-                            {
+                            if lookup.jlpt > config.language.japanese.lowest_level() {
                                 new_text
                                     .fragments
                                     .push(durf_parser::TextFragment::new(token.lemma(), None));
@@ -199,13 +205,15 @@ impl DictDb {
 
                             // Add appropriate attributes.
                             let mut attributes = durf_parser::TextAttributes::default();
-                            attributes.tooltip = Some(format!(
-                                "{}[{}::{}::N{}]",
-                                word,
-                                lookup.kana,
-                                lookup.meaning,
-                                lookup.jlpt.unwrap_or(0),
-                            ));
+                            if lookup.jlpt <= config.language.japanese.definitions() {
+                                attributes.tooltip = Some(format!(
+                                    "{}[{}::{}::{}]",
+                                    word, lookup.kana, lookup.meaning, lookup.jlpt,
+                                ));
+                            }
+                            if lookup.jlpt <= config.language.japanese.furigana() {
+                                attributes.annotation = Some(lookup.kana);
+                            }
                             new_text.fragments.push(durf_parser::TextFragment::new(
                                 token.lemma(),
                                 Some(attributes),
@@ -235,7 +243,7 @@ pub struct DictLookup {
     pub is_kana: bool,
     pub kana: String,
     pub meaning: String,
-    pub jlpt: Option<u8>,
+    pub jlpt: JlptLevel,
 }
 
 /// Embeded Japanese language data.
@@ -257,7 +265,7 @@ impl From<&CommonVocab> for DictLookup {
             is_kana: !value.word.is_kana(),
             kana: value.reading.clone(),
             meaning: value.meaning.clone(),
-            jlpt: Some(value.level),
+            jlpt: value.level.into(),
         }
     }
 }
