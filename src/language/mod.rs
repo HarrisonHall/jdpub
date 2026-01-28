@@ -177,69 +177,108 @@ impl DictDb {
                 let mut new_text = durf_parser::Text::new();
 
                 // TODO: Configurable skip characters.
-                let total_text = text
-                    .fragments
-                    .iter()
-                    .fold(String::new(), |acc, el| acc + &el.text)
-                    .replace("\n", " ")
-                    .replace("　", "");
-                let total_text = total_text.as_str();
+                // let total_text = text
+                //     .fragments
+                //     .iter()
+                //     .fold(String::new(), |acc, el| acc + &el.text)
+                //     .replace("\n", " ")
+                //     .replace("　", "");
+                // let total_text = total_text.as_str();
 
-                let tokens = total_text.tokenize();
-                'token_loop: for token in tokens {
-                    if token.is_word() {
-                        let word = token.lemma();
+                for fragment in text.fragments.iter() {
+                    let total_text = fragment.text.replace("\n", " ").replace("　", "");
+
+                    // Support keeping the previous text attributes.
+                    // If an existing annotation exists, prefer that (e.g.,
+                    // name readings).
+                    if let Some(annotation) = &fragment.attributes.annotation {
+                        let word = fragment.text.trim();
+                        let mut attributes = durf_parser::TextAttributes::default();
+                        attributes.annotation = Some(annotation.clone());
+
                         if let Some(lookup) = self.lookup(word) {
-                            // TODO: Support keeping the previous text attributes.
-                            // If an existing annotation exists, prefer that (e.g.,
-                            // name readings).
-
-                            // If this is a single character kana, skip.
-                            // TODO: This should be smarter. We should check for
-                            // things like counters.
-                            if lookup.is_kana
-                                && (word.character_count() == 1
-                                    || lookup.kana.character_count() == 1)
-                            {
-                                new_text
-                                    .fragments
-                                    .push(durf_parser::TextFragment::new(token.lemma(), None));
-                                continue 'token_loop;
-                            }
-
-                            // If the jlpt level of this word is higher than our
-                            // jlpt level, skip.
-                            if lookup.jlpt > config.language.japanese.lowest_level() {
-                                new_text
-                                    .fragments
-                                    .push(durf_parser::TextFragment::new(token.lemma(), None));
-                                continue 'token_loop;
-                            }
-
-                            // Add appropriate attributes.
-                            let mut attributes = durf_parser::TextAttributes::default();
                             if lookup.jlpt <= config.language.japanese.definitions() {
                                 attributes.tooltip = Some(format!(
                                     "{}[{}::{}::{}]",
-                                    word, lookup.kana, lookup.meaning, lookup.jlpt,
+                                    word,
+                                    if word.is_kana() {
+                                        word
+                                    } else {
+                                        lookup.kana.as_str()
+                                    },
+                                    lookup.meaning,
+                                    lookup.jlpt,
                                 ));
                             }
-                            if lookup.jlpt <= config.language.japanese.furigana() {
-                                attributes.annotation = Some(lookup.kana);
+                        }
+
+                        new_text
+                            .fragments
+                            .push(durf_parser::TextFragment::new(fragment.text.clone(), None));
+                        continue;
+                    }
+
+                    let total_text = total_text.as_str();
+                    let tokens = total_text.tokenize();
+                    'token_loop: for token in tokens {
+                        if token.is_word() {
+                            let word = token.lemma();
+                            if let Some(lookup) = self.lookup(word) {
+                                // If this is a single character kana, skip.
+                                // TODO: This should be smarter. We should check for
+                                // things like counters.
+                                if lookup.is_kana
+                                    && (word.character_count() == 1
+                                        || lookup.kana.character_count() == 1)
+                                {
+                                    new_text
+                                        .fragments
+                                        .push(durf_parser::TextFragment::new(token.lemma(), None));
+                                    continue 'token_loop;
+                                }
+
+                                // If the jlpt level of this word is higher than our
+                                // jlpt level, skip.
+                                if lookup.jlpt > config.language.japanese.lowest_level() {
+                                    new_text
+                                        .fragments
+                                        .push(durf_parser::TextFragment::new(token.lemma(), None));
+                                    continue 'token_loop;
+                                }
+
+                                // Add appropriate attributes.
+                                let mut attributes = durf_parser::TextAttributes::default();
+                                if lookup.jlpt <= config.language.japanese.definitions() {
+                                    attributes.tooltip = Some(format!(
+                                        "{}[{}::{}::{}]",
+                                        word,
+                                        if word.is_kana() {
+                                            word
+                                        } else {
+                                            lookup.kana.as_str()
+                                        },
+                                        lookup.meaning,
+                                        lookup.jlpt,
+                                    ));
+                                }
+                                if lookup.jlpt <= config.language.japanese.furigana() {
+                                    attributes.annotation = Some(lookup.kana);
+                                }
+
+                                new_text.fragments.push(durf_parser::TextFragment::new(
+                                    token.lemma(),
+                                    Some(attributes),
+                                ));
+                            } else {
+                                new_text
+                                    .fragments
+                                    .push(durf_parser::TextFragment::new(token.lemma(), None));
                             }
-                            new_text.fragments.push(durf_parser::TextFragment::new(
-                                token.lemma(),
-                                Some(attributes),
-                            ));
                         } else {
                             new_text
                                 .fragments
                                 .push(durf_parser::TextFragment::new(token.lemma(), None));
                         }
-                    } else {
-                        new_text
-                            .fragments
-                            .push(durf_parser::TextFragment::new(token.lemma(), None));
                     }
                 }
 
