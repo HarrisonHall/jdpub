@@ -1,0 +1,32 @@
+# jdpub environment.
+
+[env]
+_.path = '~/.cargo/bin'
+# _.path = '~/.rustup/toolchains/{{env.RUSTC_VERSION}}-'
+# RUSTC_VERSION = "stable"
+
+[tools]
+"cargo:cargo-zigbuild" = "latest"
+
+[tasks.setup]
+description = "Set up dependencies."
+run = [
+  "rustup default stable",
+  "rustup component add rust-std-x86_64-unknown-linux-musl",
+]
+
+[tasks.edit]
+description = "Edit the repo."
+run = "{{env.EDITOR}} ./crates"
+
+[tasks.build]
+description = "Build for linux."
+run = "cargo zigbuild --package durf_browser --target x86_64-unknown-linux-gnu.2.28 --release"
+
+[tasks.test]
+description = "Test the repo."
+run = "RUST_LOG=trace cargo test -- --nocapture --test-threads=1"
+
+[tasks.publish]
+description = "Publish the workspace."
+run = "cargo publish"

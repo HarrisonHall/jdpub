@@ -4,17 +4,21 @@ use super::*;
 /// Currently, this only supports Japanese.
 pub struct DictDb {
     common: HashMap<String, CommonVocab>,
-    dict: jmdict_fast::Dict<'static>,
+    #[allow(unused)]
     config: LanguageConfig,
+    #[cfg(feature = "jp")]
+    dict: jmdict_fast::Dict<'static>,
 }
 
 impl DictDb {
     /// Create a new DictDb.
     pub fn new(config: &Config) -> Result<Self> {
+        #[cfg(feature = "jp")]
         let dict = jmdict_fast::Dict::load_default()?;
 
         let mut db = Self {
             common: HashMap::new(),
+            #[cfg(feature = "jp")]
             dict,
             config: config.language.clone(),
         };
@@ -105,50 +109,55 @@ impl DictDb {
             return Some(common.into());
         }
 
-        // Otherwise we look the word up.
-        let results = match self.config.approximate {
-            false => self.dict.lookup_exact(word),
-            true => {
-                let deinflected = self.dict.lookup_exact_with_deinflection(word);
-                if deinflected.len() > 0 {
-                    // If a deinflected word is common, we'll use that.
-                    for entry in deinflected.iter() {
-                        for kanji in entry.kanji.iter() {
-                            if let Some(common) = self.common.get(&kanji.text) {
-                                return Some(common.into());
-                            }
-                        }
-                        for kana in entry.kana.iter() {
-                            if let Some(common) = self.common.get(&kana.text) {
-                                return Some(common.into());
-                            }
-                        }
-                    }
-
-                    // Otherwise, we use teh deinflected word.
-                    deinflected
-                } else {
-                    self.dict.lookup_partial(word)
-                }
-            }
-        };
-        if results.len() == 0 {
-            return None;
-        }
-
-        if results[0].kana.len() == 0
-            || results[0].sense.len() == 0
-            || results[0].sense[0].gloss.len() == 0
+        #[cfg(feature = "jp")]
         {
-            return None;
+            // Otherwise we look the word up.
+            let results = match self.config.approximate {
+                false => self.dict.lookup_exact(word),
+                true => {
+                    let deinflected = self.dict.lookup_exact_with_deinflection(word);
+                    if deinflected.len() > 0 {
+                        // If a deinflected word is common, we'll use that.
+                        for entry in deinflected.iter() {
+                            for kanji in entry.kanji.iter() {
+                                if let Some(common) = self.common.get(&kanji.text) {
+                                    return Some(common.into());
+                                }
+                            }
+                            for kana in entry.kana.iter() {
+                                if let Some(common) = self.common.get(&kana.text) {
+                                    return Some(common.into());
+                                }
+                            }
+                        }
+
+                        // Otherwise, we use teh deinflected word.
+                        deinflected
+                    } else {
+                        self.dict.lookup_partial(word)
+                    }
+                }
+            };
+            if results.len() == 0 {
+                return None;
+            }
+
+            if results[0].kana.len() == 0
+                || results[0].sense.len() == 0
+                || results[0].sense[0].gloss.len() == 0
+            {
+                return None;
+            }
+
+            Some(DictLookup {
+                is_kana: word.trim().is_kana(),
+                kana: results[0].kana[0].text.clone(),
+                meaning: results[0].sense[0].gloss[0].text.clone(),
+                jlpt: JlptLevel::None,
+            })
         }
 
-        Some(DictLookup {
-            is_kana: word.trim().is_kana(),
-            kana: results[0].kana[0].text.clone(),
-            meaning: results[0].sense[0].gloss[0].text.clone(),
-            jlpt: JlptLevel::None,
-        })
+        None
     }
 
     /// Transform a durf AST to one annotated with DictDb lookups.

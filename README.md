@@ -6,29 +6,29 @@ words to make reading easier.
 jdpub currently only supports annotating documents for the Japanese language.
 
 > [!WARNING]  
-> This software is version `0.2.0`, expect configuration and usage to change.
+> This software is version `0.6.0`, expect configuration and usage to change.
 > The alpha release exists to provide the tool as early as possible.
 
 ## Usage
 
-A web view for jdpub is currently in development. Until then, refer to the CLI.
+A web view for jdpub is currently in development. Until then, refer to the CLI:
 
 ```
-Usage: jdpub [OPTIONS] --output <OUTPUT> <INPUT>
+Annotate documents with readings and definitions
+
+Usage: jdpub [OPTIONS] [INPUT]...
 
 Arguments:
-  <INPUT>  Input uri/file
+  [INPUT]...  Input chapters or book files
 
 Options:
-  -o, --output <OUTPUT>  Output file
-  -c, --config <CONFIG>  Configuration file
-  -d, --debug            debug flag
-  -v, --verbose          Verbose flag
-      --cover <COVER>    Cover image uri/file
-      --title <TITLE>    Title of export
-      --author <AUTHOR>  Author of export
-  -h, --help             Print help
-  -V, --version          Print version
+  -o, --output <OUTPUT>     Output file
+  -c, --config <CONFIG>     Additional configuration file, parsed first
+  -d, --debug               Debug flag
+  -v, --verbose             Verbose flag
+      --do-not-use-builtin  Skip built-in configurations
+  -h, --help                Print help
+  -V, --version             Print version
 ```
 
 Example usage:
@@ -102,12 +102,9 @@ readers:
 
 ## Installation
 
-jdpub relies on 2 crates that currently make it impossible to build manually.
-`durf_parser` is an HTML parsing & minimizing crate that I have not yet
-released. `jmdict-fast` is an excellent crate for Japanese word lookup, but
-building on my own pc requires modifications to the source that I have note yet
-upstreamed anywhere.
+```
+cargo install jdpub -F jp
+```
 
-Releases will be periodically provided for x64 Linux until this is resolved. I
-have no plans to test a Windows build at this point, but I can produce one if
-requested. Otherwise, I suggest waiting until the web view is available.
+`jmdict-fast` is used for Japanese word lookup with the `jp` feature, but may
+require a fast internet connection to build as-is.

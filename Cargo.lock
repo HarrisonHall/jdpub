@@ -703,8 +703,10 @@ dependencies = [
 ]
 
 [[package]]
-name = "durf-parser"
-version = "0.0.1"
+name = "durf_parser"
+version = "0.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "184eb8e27977eda69aab9601f8017aeb9db7607c68379f5244417f7c78552244"
 dependencies = [
  "scraper",
  "serde",
@@ -1638,7 +1640,7 @@ checksum = "92ecc6618181def0457392ccd0ee51198e065e016d1d527a7ac1b6dc7c1f09d2"
 
 [[package]]
 name = "jdpub"
-version = "0.5.0"
+version = "0.6.0"
 dependencies = [
  "anyhow",
  "build_html",
@@ -1647,7 +1649,7 @@ dependencies = [
  "clap",
  "colored",
  "csv",
- "durf-parser",
+ "durf_parser",
  "epub-builder",
  "epub-parser",
  "futures",
@@ -1670,6 +1672,8 @@ dependencies = [
 [[package]]
 name = "jmdict-fast"
 version = "0.1.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "09a4b9010147bff475423e594bc622e3a060ee274b365e789aeceff43edca924"
 dependencies = [
  "anyhow",
  "bunpo",

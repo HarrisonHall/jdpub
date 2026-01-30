@@ -1,7 +1,20 @@
 [package]
 name = "jdpub"
-version = "0.5.0"
+description = "Annotate source documents with Japanese readings and definitions."
+version = "0.6.0"
 edition = "2024"
+authors = ["hachha <hachha@hachha.dev>"]
+keywords = ["japanese", "language", "ebook", "epub"]
+categories = []
+repository = "https://github.com/HarrisonHall/jdpub"
+homepage = "https://github.com/HarrisonHall/jdpub"
+license-file = "LICENSE"
+readme = "README.md"
+rust-version = "1.85.0"
+
+[features]
+default = []
+jp = ["dep:jmdict-fast"]
 
 [dependencies]
 
@@ -19,16 +32,13 @@ tracing = "0.1.41"
 tracing-subscriber = "0.3.20"
 tracing-test = "0.2"
 
-durf-parser = { path = "../durf/crates/durf-parser", version = "0.0.1" }
+durf_parser = "0.2.0"
 
 
 # Lang
 charabia = { version = "0.9.9", default-features = false, features = ["japanese"] }
-jmdict-fast = { verison = "0.1.1", path = "../jmdict-fst/jmdict-fast" }
+jmdict-fast = { version = "0.1.1", optional = true }
 wana_kana = "4.0.0"
-# jmdict-fast = "0.1.1"
-# jmdict-rs = "0.1.2"
-# ejdict_rs = "0.0.4"
 
 # jlpt
 csv = "1.4.0"

@@ -2,7 +2,7 @@ use std::str::FromStr;
 
 use super::*;
 
-/// Command-line parsing.
+/// Annotate documents with readings and definitions.
 #[derive(Parser, Debug)]
 #[command(version, about, long_about = None)]
 pub struct Cli {
@@ -14,7 +14,7 @@ pub struct Cli {
     /// Additional configuration file, parsed first.
     #[arg(short, long)]
     config: Option<PathBuf>,
-    /// debug flag.
+    /// Debug flag.
     #[arg(short, long, default_value_t = false)]
     pub debug: bool,
     /// Verbose flag.

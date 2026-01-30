@@ -4,9 +4,9 @@ use epub_parser::Epub;
 
 pub fn import(
     path: &Path,
-    config: &Config,
+    #[allow(unused)] config: &Config,
     book: &mut Book,
-    chapter_config: &ChapterConfig,
+    #[allow(unused)] chapter_config: &ChapterConfig,
 ) -> Result<()> {
     let epub = match Epub::parse(path) {
         Ok(epub) => epub,
