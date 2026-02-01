@@ -7,6 +7,7 @@ _.path = '~/.cargo/bin'
 
 [tools]
 "cargo:cargo-zigbuild" = "latest"
+#curl = "latest"
 
 [tasks.setup]
 description = "Set up dependencies."
@@ -30,3 +31,9 @@ run = "RUST_LOG=trace cargo test -- --nocapture --test-threads=1"
 [tasks.publish]
 description = "Publish the workspace."
 run = "cargo publish"
+
+[tasks.update-cache]
+description = "Manually update cached files."
+run = [
+  "curl \"https://github.com/scriptin/jmdict-simplified/releases/download/3.6.1%2B20250714122633/jmdict-eng-3.6.1+20250714122633.json.tgz\" -o metadata/language/jp/jmdict-eng-3.6.1+20250714122633.json.tgz"
+]

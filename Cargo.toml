@@ -1,7 +1,7 @@
 [package]
 name = "jdpub"
 description = "Annotate source documents with Japanese readings and definitions."
-version = "0.6.0"
+version = "0.6.1"
 edition = "2024"
 authors = ["hachha <hachha@hachha.dev>"]
 keywords = ["japanese", "language", "ebook", "epub"]
@@ -32,7 +32,7 @@ tracing = "0.1.41"
 tracing-subscriber = "0.3.20"
 tracing-test = "0.2"
 
-durf_parser = "0.2.0"
+durf_parser = "0.2.2"
 
 
 # Lang

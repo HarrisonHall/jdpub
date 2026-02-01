@@ -149,14 +149,15 @@ impl DictDb {
                 return None;
             }
 
-            Some(DictLookup {
+            return Some(DictLookup {
                 is_kana: word.trim().is_kana(),
                 kana: results[0].kana[0].text.clone(),
                 meaning: results[0].sense[0].gloss[0].text.clone(),
                 jlpt: JlptLevel::None,
-            })
+            });
         }
 
+        #[cfg(not(feature = "jp"))]
         None
     }
 
@@ -258,6 +259,7 @@ pub struct DictLookup {
 /// Embeded Japanese language data.
 #[derive(RustEmbed)]
 #[folder = "metadata/language/jp"]
+#[exclude = "*.tgz"]
 struct JapaneseMetadata;
 
 #[derive(Debug, Clone)]

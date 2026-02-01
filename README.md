@@ -6,7 +6,7 @@ words to make reading easier.
 jdpub currently only supports annotating documents for the Japanese language.
 
 > [!WARNING]  
-> This software is version `0.6.0`, expect configuration and usage to change.
+> This software is version `0.6.1`, expect configuration and usage to change.
 > The alpha release exists to provide the tool as early as possible.
 
 ## Usage
@@ -102,7 +102,8 @@ readers:
 
 ## Installation
 
-```
+```bash
+mise update-cache
 cargo install jdpub -F jp
 ```
 

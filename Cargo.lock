@@ -704,9 +704,9 @@ dependencies = [
 
 [[package]]
 name = "durf_parser"
-version = "0.2.0"
+version = "0.2.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "184eb8e27977eda69aab9601f8017aeb9db7607c68379f5244417f7c78552244"
+checksum = "6dd48685973170a5716f26e13f6a059335e5f2d57d910b69102971f7f03d90af"
 dependencies = [
  "scraper",
  "serde",
@@ -1640,7 +1640,7 @@ checksum = "92ecc6618181def0457392ccd0ee51198e065e016d1d527a7ac1b6dc7c1f09d2"
 
 [[package]]
 name = "jdpub"
-version = "0.6.0"
+version = "0.6.1"
 dependencies = [
  "anyhow",
  "build_html",

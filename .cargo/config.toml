@@ -1,0 +1,3 @@
+[env]
+# Use a different directory for 
+JMDICT_DATA = "metadata/language/jp"
