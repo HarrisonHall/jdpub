@@ -14,7 +14,10 @@ impl DictDb {
     /// Create a new DictDb.
     pub fn new(config: &Config) -> Result<Self> {
         #[cfg(feature = "jp")]
-        let dict = jmdict_fast::Dict::load_default()?;
+        let dict = match jmdict_fast::Dict::load_default() {
+            Ok(dict) => dict,
+            Err(_) => bail!("Failed to load jmdict."),
+        };
 
         let mut db = Self {
             common: HashMap::new(),

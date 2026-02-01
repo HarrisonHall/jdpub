@@ -20,9 +20,9 @@ run = [
 description = "Edit the repo."
 run = "{{env.EDITOR}} ./crates"
 
-[tasks.build]
-description = "Build for linux."
-run = "cargo zigbuild --package durf_browser --target x86_64-unknown-linux-gnu.2.28 --release"
+# [tasks.build]
+# description = "Build for linux."
+# run = "cargo zigbuild --package durf_browser --target x86_64-unknown-linux-gnu.2.28 --release"
 
 [tasks.test]
 description = "Test the repo."
