@@ -16,6 +16,7 @@ pub use prelude::*;
 #[tokio::main]
 async fn main() -> Result<()> {
     // Parse the CLI.
+    color_eyre::install()?;
     let cli = Cli::new()?;
     crate::logging::init(&cli)?;
 

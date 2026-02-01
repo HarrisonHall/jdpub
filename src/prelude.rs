@@ -10,8 +10,8 @@ pub mod internal {
     #[allow(unused)]
     use std::str::FromStr;
 
-    pub use anyhow::{Result, anyhow, bail};
     pub use charabia::Tokenize;
+    pub use color_eyre::eyre::{Result, anyhow, bail};
 
     pub use clap::Parser;
     pub use rust_embed::RustEmbed;
