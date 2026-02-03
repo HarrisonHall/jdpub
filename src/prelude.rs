@@ -9,6 +9,7 @@ pub mod internal {
     pub use std::path::{Path, PathBuf};
     #[allow(unused)]
     use std::str::FromStr;
+    pub use std::sync::Arc;
 
     pub use charabia::Tokenize;
     pub use color_eyre::eyre::{Result, anyhow, bail};

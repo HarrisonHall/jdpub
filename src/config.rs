@@ -143,6 +143,7 @@ impl Default for HtmlParseConfig {
 #[serde(deny_unknown_fields)]
 pub struct LanguageConfig {
     /// Use approximate lookups and definitions.
+    #[serde(default)]
     pub approximate: bool,
     /// Japanese language configuration.
     #[serde(default)]
@@ -168,6 +169,15 @@ pub struct JapaneseLanguageConfig {
     /// JLPT level for furigana.
     #[serde(default, alias = "annotations")]
     furigana: SerializedJlptLevel,
+    /// Custom word-definition pairs.
+    #[serde(
+        default,
+        alias = "custom-definitions",
+        alias = "custom-vocab",
+        alias = "custom-vocabulary",
+        alias = "vocab"
+    )]
+    custom_vocab: HashMap<String, Arc<String>>,
 }
 
 impl JapaneseLanguageConfig {
@@ -176,12 +186,22 @@ impl JapaneseLanguageConfig {
         self.definitions().max(self.furigana())
     }
 
+    /// Get definitions level.
     pub fn definitions(&self) -> JlptLevel {
         (&self.definitions).into()
     }
 
+    /// Get furigana level.
     pub fn furigana(&self) -> JlptLevel {
         (&self.furigana).into()
+    }
+
+    /// Get custom vocab.
+    pub fn custom_vocab(&self, vocab: impl AsRef<str>) -> Option<Arc<String>> {
+        match self.custom_vocab.get(vocab.as_ref()) {
+            Some(word) => Some(word.clone()),
+            None => None,
+        }
     }
 }
 
@@ -190,6 +210,7 @@ impl Default for JapaneseLanguageConfig {
         Self {
             definitions: SerializedJlptLevel::Level(JlptLevel::N3),
             furigana: SerializedJlptLevel::Level(JlptLevel::N3),
+            custom_vocab: HashMap::new(),
         }
     }
 }

@@ -102,6 +102,15 @@ impl DictDb {
     pub fn lookup(&self, word: &str) -> Option<DictLookup> {
         let word = word.trim();
 
+        if let Some(def) = self.config.japanese.custom_vocab(word) {
+            return Some(DictLookup {
+                is_kana: word.is_kana(),
+                kana: word.into(),
+                meaning: (*def).clone(),
+                jlpt: JlptLevel::None,
+            });
+        }
+
         // Skip english words, numerals, etc.
         if word.is_english() {
             return None;

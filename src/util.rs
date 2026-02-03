@@ -91,3 +91,14 @@ pub fn get_mimetype(resource: impl AsRef<str>) -> &'static str {
         "application/octet-stream"
     }
 }
+
+/// Expand path.
+pub fn expand_path(path: impl AsRef<Path>) -> Result<PathBuf> {
+    match shellexpand::full(match path.as_ref().to_str() {
+        Some(p) => p,
+        None => bail!("Failed to interpret path `{:?}`.", path.as_ref()),
+    }) {
+        Ok(expanded) => Ok(expanded.into_owned().into()),
+        Err(e) => bail!("Failed to expand path `{:?}`: {e}", path.as_ref()),
+    }
+}

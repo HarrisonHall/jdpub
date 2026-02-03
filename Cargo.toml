@@ -42,7 +42,7 @@ wana_kana = "4.0.0"
 
 # jlpt
 csv = "1.4"
-serde = { version = "1", features = ["derive"] }
+serde = { version = "1", features = ["derive", "rc"] }
 
 # HTML
 build_html = "2.7"

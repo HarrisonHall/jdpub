@@ -3,9 +3,11 @@ use super::*;
 use epub_builder::EpubBuilder;
 use epub_builder::EpubContent;
 use epub_builder::ReferenceType;
-// use epub_builder::Result;
-// use epub_builder::TocElement;
 use epub_builder::ZipLibrary;
+
+#[derive(RustEmbed)]
+#[folder = "metadata/styles"]
+struct StylesMetadata;
 
 pub fn export(book: &mut Book, config: &Config) -> Result<()> {
     // Create the builder.
@@ -44,7 +46,8 @@ pub fn export(book: &mut Book, config: &Config) -> Result<()> {
         },
     )?;
 
-    builder.stylesheet(".footnotes { display: hidden; }".as_bytes())?;
+    // builder.stylesheet(".footnotes { display: hidden; }".as_bytes())?;
+    builder.stylesheet(read_embedded_text::<StylesMetadata>("styles.css")?.as_bytes())?;
     // .stylesheet(css_file.as_bytes())?
     // .add_content(
     //     EpubContent::new("cover.xhtml", dummy_content.as_bytes())

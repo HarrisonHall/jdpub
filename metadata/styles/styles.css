@@ -1,0 +1,66 @@
+/*
+* Builtin jdpub styles.
+* Inspired by:
+* - https://github.com/mattharrison/epub-css-starter-kit/tree/master
+*/
+
+h1 {
+  font-size: 2em;
+  margin-bottom: 3.2em;
+}
+
+/* .title h1 { */
+  /* margin-bottom: 0px; */
+  /* margin-top: 3.2em; */
+/* } */
+
+h2 {
+  font-size: 1.75em;
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+}
+
+h3 {
+  font-size: 1.5em;
+}
+
+h4 {
+  font-size: 1.4em;
+}
+
+h5 {
+  font-size: 1.3em;
+}
+
+h6 {
+  font-size: 1.2em;
+}
+
+/* Do not indent first paragraph. Mobi will need class='first-para' */
+h1 + p, h2 + p, h3 + p, h4 + p, h5 + p, h6 + p {
+  text-indent: 0;
+}
+
+p {
+  /* paperwhite defaults to sans */
+  /* font-family: "Palatino", "Times New Roman", Caecilia, serif; */
+  /* -webkit-hyphens: auto; */
+  /* -moz-hyphens: auto; */
+  /* hyphens: auto; */
+  /* hyphenate-after: 3; */
+  /* hyphenate-before: 3; */
+  /* hyphenate-lines: 2; */
+  /* -webkit-hyphenate-after: 3; */
+  /* -webkit-hyphenate-before: 3; */
+  /* -webkit-hyphenate-lines: 2; */
+  /* line-height: 1.5em; */
+  /* margin: 0; */
+  /* text-align: justify; */
+  /* text-indent: 1em; */
+  /* orphans: 2; */
+  /* widows: 2; */
+}
+
+.footnotes {
+  display: hidden;
+}

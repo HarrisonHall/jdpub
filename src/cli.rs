@@ -91,6 +91,33 @@ impl Cli {
             config.export.output_file = PathBuf::from_str("./output.epub")?;
         }
 
+        // Check paths.
+        for chapter in &mut config.import.chapters {
+            if chapter.uri.starts_with("http://") {
+                continue;
+            }
+            if chapter.uri.starts_with("https://") {
+                continue;
+            }
+            chapter.uri = chapter.uri.replace("file://", "");
+            let chapter_uri = util::expand_path(&chapter.uri)?;
+            if !chapter_uri.exists() {
+                bail!("Chapter `{chapter_uri:?}` does not exist.");
+            }
+            chapter.uri = chapter_uri.to_string_lossy().into_owned();
+        }
+        if let Some(cover) = config.export.cover {
+            let cover = util::expand_path(cover)?;
+            if !cover.exists() {
+                bail!("Cover `{cover:?}` does not exist.");
+            }
+            config.export.cover = Some(cover);
+        }
+        if config.export.output_file.as_os_str().len() == 0 {
+            bail!("Output file cannot be empty.");
+        }
+        config.export.output_file = util::expand_path(config.export.output_file)?;
+
         Ok(config)
     }
 }
