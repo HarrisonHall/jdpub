@@ -1,7 +1,7 @@
 [package]
 name = "jdpub"
 description = "Annotate source documents with Japanese readings and definitions."
-version = "0.8.0"
+version = "0.8.1"
 edition = "2024"
 authors = ["hachha <hachha@hachha.dev>"]
 keywords = ["japanese", "language", "ebook", "epub"]
@@ -50,7 +50,7 @@ uuid = { version = "1.19", features = ["v4"] }
 
 # EPUB
 epub-builder = "0.8"
-epub-parser = "0.2"
+epub = "2.1.5"
 
 # File
 rust-embed = { version = "8.11", features = ["include-exclude", "compression"] }

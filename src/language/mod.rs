@@ -194,7 +194,7 @@ impl DictDb {
                 //     .replace("　", "");
                 // let total_text = total_text.as_str();
 
-                for fragment in text.fragments.iter() {
+                'fragment_loop: for fragment in text.fragments.iter() {
                     let total_text = fragment.text.replace("\n", " ").replace("　", "");
 
                     // Support keeping the previous text attributes.
@@ -223,15 +223,29 @@ impl DictDb {
 
                         new_text
                             .fragments
-                            .push(durf_parser::TextFragment::new(fragment.text.clone(), None));
-                        continue;
+                            .push(durf_parser::TextFragment::new(total_text, Some(attributes)));
+                        continue 'fragment_loop;
                     }
 
                     let total_text = total_text.as_str();
                     let tokens = total_text.tokenize();
+                    let mut last_word: String = String::with_capacity(0);
+                    let mut last_word_cp: String;
                     'token_loop: for token in tokens {
                         if token.is_word() {
-                            let word = token.lemma();
+                            let mut word = token.lemma();
+
+                            // Words should not end with っ, so we combine tokens if necessary.
+                            if word.ends_with("っ") {
+                                last_word += word;
+                                continue 'token_loop;
+                            }
+                            if !last_word.is_empty() {
+                                last_word_cp = format!("{last_word}{word}");
+                                last_word.clear();
+                                word = last_word_cp.as_str();
+                            }
+
                             if let Some(lookup) = self.lookup(word) {
                                 // If this is a single character kana, skip.
                                 // TODO: This should be smarter. We should check for
@@ -242,7 +256,7 @@ impl DictDb {
                                 {
                                     new_text
                                         .fragments
-                                        .push(durf_parser::TextFragment::new(token.lemma(), None));
+                                        .push(durf_parser::TextFragment::new(word, None));
                                     continue 'token_loop;
                                 }
 
@@ -251,7 +265,7 @@ impl DictDb {
                                 if lookup.jlpt > config.language.japanese.lowest_level() {
                                     new_text
                                         .fragments
-                                        .push(durf_parser::TextFragment::new(token.lemma(), None));
+                                        .push(durf_parser::TextFragment::new(word, None));
                                     continue 'token_loop;
                                 }
 
@@ -274,16 +288,22 @@ impl DictDb {
                                     attributes.annotation = Some(lookup.kana);
                                 }
 
-                                new_text.fragments.push(durf_parser::TextFragment::new(
-                                    token.lemma(),
-                                    Some(attributes),
-                                ));
+                                new_text
+                                    .fragments
+                                    .push(durf_parser::TextFragment::new(word, Some(attributes)));
                             } else {
                                 new_text
                                     .fragments
-                                    .push(durf_parser::TextFragment::new(token.lemma(), None));
+                                    .push(durf_parser::TextFragment::new(word, None));
                             }
                         } else {
+                            if !last_word.is_empty() {
+                                new_text
+                                    .fragments
+                                    .push(durf_parser::TextFragment::new(&last_word, None));
+                                last_word.clear();
+                                continue 'token_loop;
+                            }
                             new_text
                                 .fragments
                                 .push(durf_parser::TextFragment::new(token.lemma(), None));

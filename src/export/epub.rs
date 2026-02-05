@@ -46,20 +46,8 @@ pub fn export(book: &mut Book, config: &Config) -> Result<()> {
         },
     )?;
 
-    // builder.stylesheet(".footnotes { display: hidden; }".as_bytes())?;
+    // Add stylesheet.
     builder.stylesheet(read_embedded_text::<StylesMetadata>("styles.css")?.as_bytes())?;
-    // .stylesheet(css_file.as_bytes())?
-    // .add_content(
-    //     EpubContent::new("cover.xhtml", dummy_content.as_bytes())
-    //         .title("Cover")
-    //         .reftype(ReferenceType::Cover),
-    // )?
-    // Add a title page
-    // .add_content(
-    //     EpubContent::new("title.xhtml", dummy_content.as_bytes())
-    //         .title("Title <T>")
-    //         .reftype(ReferenceType::TitlePage),
-    // )?
 
     // Add cover.
     tracing::info!("Cover using title: {}.", book.title);

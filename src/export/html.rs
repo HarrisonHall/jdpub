@@ -211,7 +211,6 @@ impl HtmlDoc {
                                 .with_attribute("aria-describedby", format!("#tooltip-{id}"))
                                 .into(),
                         );
-                        // .with_child(html::HtmlChild::new(html::HtmlTag::))
                         self.footnotes.push(
                             html::HtmlElement::new(html::HtmlTag::Aside)
                                 .with_child(tooltip.as_str().into())
@@ -232,6 +231,20 @@ impl HtmlDoc {
                         elem = elem.with_child(text_elem.into());
                         continue;
                     }
+                    if let Some(annotation) = &fragment.attributes.annotation {
+                        text_elem = text_elem.with_child(
+                            html::HtmlElement::new(html::HtmlTag::Link)
+                                .with_child(html::HtmlChild::Raw(format!(
+                                    "<ruby>{}<rp>(</rp><rt>{}</rt><rp>)</rp></ruby>",
+                                    fragment.text, annotation
+                                )))
+                                .into(),
+                        );
+
+                        elem = elem.with_child(text_elem.into());
+                        continue;
+                    }
+
                     // if fragment.attributes.preformatted {
                     //     text_elem = text_elem.
                     // }
